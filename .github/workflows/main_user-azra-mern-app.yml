@@ -20,13 +20,21 @@ jobs:
         with:
           node-version: "20.x"
 
-      # Install everything (server + client via your package.json build script)
-      - name: Install dependencies
+      # Install backend dependencies
+      - name: Install server dependencies
         run: npm install
 
-      # Run your root build script (this already builds client)
-      - name: Build project
-        run: npm run build
+      # Install frontend dependencies
+      - name: Install client dependencies
+        run: |
+          cd client
+          npm install
+
+      # Build React frontend
+      - name: Build React app
+        run: |
+          cd client
+          npm run build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -54,7 +62,7 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DBE8D4B313D54F8B9F5C615608E921EF }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F2DB1731E3E44231957465CBCB905281 }}
 
-      - name: Deploy to Azure
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: "user-azra-mern-app"
