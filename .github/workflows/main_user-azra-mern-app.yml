@@ -1,5 +1,3 @@
-# Azure Web App Deployment Workflow
-
 name: Build and deploy Node.js app to Azure Web App - user-azra-mern-app
 
 on:
@@ -17,29 +15,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "20.x"
 
-      # Install backend dependencies
-      - name: Install server dependencies
+      # Install everything (server + client via your package.json build script)
+      - name: Install dependencies
         run: npm install
 
-      # Install frontend dependencies
-      - name: Install client dependencies
-        run: |
-          cd client
-          npm install
+      # Run your root build script (this already builds client)
+      - name: Build project
+        run: npm run build
 
-      # Build React frontend
-      - name: Build React app
-        run: |
-          cd client
-          npm run build
-
-      # Upload everything for deployment
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-app
@@ -53,7 +42,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
@@ -65,8 +54,7 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DBE8D4B313D54F8B9F5C615608E921EF }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F2DB1731E3E44231957465CBCB905281 }}
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+      - name: Deploy to Azure
         uses: azure/webapps-deploy@v3
         with:
           app-name: "user-azra-mern-app"
