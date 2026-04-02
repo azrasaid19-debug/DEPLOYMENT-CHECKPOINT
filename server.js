@@ -3,10 +3,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 
-// Load environment variables
 require("dotenv").config();
 
-// Import User model
 const User = require("./models/User");
 
 const app = express();
@@ -26,19 +24,15 @@ mongoose
 // ==============================
 // API ROUTES
 // ==============================
-
-// Test route
 app.get("/api/test", (req, res) => {
   res.send("API is working ✅");
 });
 
-// GET all users
 app.get("/api/users", async (req, res) => {
   const users = await User.find();
   res.json(users);
 });
 
-// POST new user
 app.post("/api/users", async (req, res) => {
   const newUser = new User(req.body);
   const savedUser = await newUser.save();
@@ -46,13 +40,12 @@ app.post("/api/users", async (req, res) => {
 });
 
 // ==============================
-// THIS PART IS IMPORTANT FOR AZURE
-// It will serve React later
+// SERVE FRONTEND (ONLY ONCE)
 // ==============================
 app.use(express.static(path.join(__dirname, "client/build")));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/build/index.html"));
+  res.sendFile(path.join(__dirname, "client/build", "index.html"));
 });
 
 // ==============================
@@ -61,10 +54,3 @@ app.get("*", (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-
-// Serve frontend
-app.use(express.static(path.join(__dirname, "client/build")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/build", "index.html"));
-});
